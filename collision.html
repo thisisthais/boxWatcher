@@ -2,6 +2,21 @@
 <meta charset="utf-8" />
 <head>
   <title>Webgazer.js + D3.js collision demo</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      height: 100%;
+    }
+
+    #myCanvas {
+      width: 80%;
+      height: 80%;
+      position: absolute;
+      bottom: 0;
+      right: 0;
+    }
+  </style>
 </head>
 <body>
   <!-- <script src="https://d3js.org/d3.v3.min.js"></script> -->
@@ -40,7 +55,6 @@
         } else {
           // Add the SVG component on the top of everything.
           // setupCollisionSystem();
-          // setUpInterestingBox();
           webgazer.setGazeListener(collisionEyeListener);
         }
       }
@@ -52,35 +66,6 @@
       //webgazer.end(); //Uncomment if you want to save the data even if you reload the page.
       window.localStorage.clear(); //Comment out if you want to save data across different sessions
     };
-
-    function setUpInterestingBox() {
-      var scene = new THREE.Scene();
-      var camera = new THREE.PerspectiveCamera(
-        75,
-        window.innerWidth / window.innerHeight,
-        0.1,
-        1000
-      );
-
-      var renderer = new THREE.WebGLRenderer();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      document.body.appendChild(renderer.domElement);
-
-      var geometry = new THREE.BoxGeometry(1, 1, 1);
-      var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-      var cube = new THREE.Mesh(geometry, material);
-      scene.add(cube);
-
-      camera.position.z = 5;
-
-      function animate() {
-        requestAnimationFrame(animate);
-        cube.rotation.x += 0.01;
-        cube.rotation.y += 0.01;
-        renderer.render(scene, camera);
-      }
-      animate();
-    }
 
     function setupCollisionSystem() {
       var width = window.innerWidth;
@@ -234,5 +219,7 @@
         .attr('y', data.y);
     };
   </script>
+
+  <canvas id="myCanvas"></canvas>
   <script src="js/box.js"></script>
 </body>
