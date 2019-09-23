@@ -1,0 +1,12 @@
+node_modules/
+css/
+data/
+documentation/
+fonts/
+media/
+search/
+*.png
+webgazer.js
+package-lock.json
+.htaccess
+
