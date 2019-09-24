@@ -3,36 +3,11 @@ var renderer;
 var camera;
 var scene;
 var cube;
-// x: 0 - 1000
-// y: 100 - 900
-
-const screenHeight = window.innerHeight;
-const screenWidth = window.innerWidth;
 
 function animate(data, clock) {
-  // x range -2, 2
-  // y range -1.5, 1.5
-  // 0 - maxX left to right
-  // 0 - maxY top to bottom
-
   // data only shows up after click training?
   if (data) {
-    var scaledX = (data.x * 1.0) / screenWidth;
-    var scaledY = (data.y * 1.0) / screenHeight;
-
-    if (scaledX < 0.5) {
-      scaledX *= -1.0;
-    }
-
-    if (scaledY > 0.5) {
-      scaledY *= -1.0;
-    }
-
-    const visibleHeight = visibleHeightAtZDepth(0, camera);
-    const visibleWidth = visibleWidthAtZDepth(0, camera);
-
-    const canvasX = (scaledX * visibleWidth) / 2;
-    const canvasY = (scaledY * visibleHeight) / 2;
+    const [canvasX, canvasY] = getCanvasCoordinates(data);
 
     cube.position.x = canvasX;
     cube.position.y = canvasY;
@@ -43,9 +18,6 @@ function animate(data, clock) {
     camera.aspect = canvas.clientWidth / canvas.clientHeight;
     camera.updateProjectionMatrix();
   }
-
-  // cube.rotation.x += 0.01;
-  // cube.rotation.y += 0.02;
 
   renderer.render(scene, camera);
 }
@@ -109,6 +81,24 @@ const visibleHeightAtZDepth = (depth, camera) => {
 const visibleWidthAtZDepth = (depth, camera) => {
   const height = visibleHeightAtZDepth(depth, camera);
   return height * camera.aspect;
+};
+
+const getCanvasCoordinates = data => {
+  const screenWidth = window.innerWidth;
+  const screenHeight = window.innerHeight;
+
+  var scaledX = (data.x * 1.0) / screenWidth;
+  var scaledY = (data.y * 1.0) / screenHeight;
+
+  // 0? or 0.5?
+  const visibleHeight = visibleHeightAtZDepth(0, camera);
+  const visibleWidth = visibleWidthAtZDepth(0, camera);
+
+  const canvasX = scaledX * visibleWidth - 2.0;
+  // -2? or -2.5
+  const canvasY = -1 * (scaledY * visibleHeight - 2.0);
+
+  return [canvasX, canvasY];
 };
 
 init();
