@@ -19,9 +19,11 @@
   </style>
 </head>
 <body>
-  <!-- <script src="https://d3js.org/d3.v3.min.js"></script> -->
+  <script src="https://d3js.org/d3.v3.min.js"></script>
   <script src="js/three.js"></script>
   <script src="./webgazer.js"></script>
+  <canvas id="myCanvas"></canvas>
+  <script src="js/box.js"></script>
 
   <script>
     const collisionSVG = 'collisionSVG';
@@ -55,7 +57,8 @@
         } else {
           // Add the SVG component on the top of everything.
           // setupCollisionSystem();
-          webgazer.setGazeListener(collisionEyeListener);
+          // webgazer.setGazeListener(collisionEyeListener);
+          webgazer.setGazeListener(animate);
         }
       }
 
@@ -190,6 +193,7 @@
     }
 
     var collisionEyeListener = function(data, clock) {
+      console.log('listener', data, clock);
       if (!data) return;
 
       nodes[0].px = data.x;
@@ -219,7 +223,4 @@
         .attr('y', data.y);
     };
   </script>
-
-  <canvas id="myCanvas"></canvas>
-  <script src="js/box.js"></script>
 </body>

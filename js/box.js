@@ -1,19 +1,38 @@
-init();
-animate();
+var canvas;
+var renderer;
+var camera;
+var scene;
+var cube;
 
-function init() {
-  const canvas = document.querySelector('#myCanvas');
-  console.log('canvas', canvas);
-  const renderer = new THREE.WebGLRenderer({ canvas });
+function animate(data) {
+  //requestAnimationFrame(animate);
+  console.log(data);
+
+  if (resizeRendererToDisplaySize(renderer)) {
+    const canvas = renderer.domElement;
+    camera.aspect = canvas.clientWidth / canvas.clientHeight;
+    camera.updateProjectionMatrix();
+  }
+
+  cube.rotation.x += 0.01;
+  cube.rotation.y += 0.02;
+
+  renderer.render(scene, camera);
+}
+
+function init(data, clock) {
+  console.log('data', data);
+  canvas = document.querySelector('#myCanvas');
+  renderer = new THREE.WebGLRenderer({ canvas });
 
   const fov = 75;
   const aspect = 2; // the canvas default
   const near = 0.1;
   const far = 5;
-  const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+  camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
   camera.position.z = 2;
 
-  var scene = new THREE.Scene();
+  scene = new THREE.Scene();
 
   const boxWidth = 1;
   const boxHeight = 1;
@@ -21,7 +40,7 @@ function init() {
   const geometry = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth);
   const material = new THREE.MeshPhongMaterial({ color: 0x44aa88 });
 
-  const cube = new THREE.Mesh(geometry, material);
+  cube = new THREE.Mesh(geometry, material);
   scene.add(cube);
 
   const lightColor = 0xffffff;
@@ -30,20 +49,6 @@ function init() {
   light.position.set(-1, 2, 4);
   scene.add(light);
 
-  function animate() {
-    requestAnimationFrame(animate);
-
-    if (resizeRendererToDisplaySize(renderer)) {
-      const canvas = renderer.domElement;
-      camera.aspect = canvas.clientWidth / canvas.clientHeight;
-      camera.updateProjectionMatrix();
-    }
-
-    cube.rotation.x += 0.01;
-    cube.rotation.y += 0.02;
-
-    renderer.render(scene, camera);
-  }
   requestAnimationFrame(animate);
 }
 
@@ -58,3 +63,6 @@ function resizeRendererToDisplaySize(renderer) {
   }
   return needResize;
 }
+
+init();
+animate();
