@@ -11,6 +11,20 @@ function animate(data, clock) {
 
     cube.position.x = canvasX;
     cube.position.y = canvasY;
+
+    const currentVertText = document.getElementById('vertText').textContent;
+    const currentHorText = document.getElementById('horText').textContent;
+
+    const vertPosition = canvasX <= 0 ? 'LEFT' : 'RIGHT';
+    const horPosition = canvasY <= 0 ? 'BOTTOM' : 'TOP';
+
+    if (currentVertText != vertPosition) {
+      document.getElementById('vertText').textContent = vertPosition;
+    }
+
+    if (currentHorText != horPosition) {
+      document.getElementById('horText').textContent = horPosition;
+    }
   }
 
   if (resizeRendererToDisplaySize(renderer)) {

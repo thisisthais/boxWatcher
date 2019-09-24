@@ -16,13 +16,35 @@
       bottom: 0;
       right: 0;
     }
+
+    div {
+      /* bottom: 0; */
+      color: red;
+      font-size: 200%;
+      position: absolute;
+      z-index: -1;
+    }
   </style>
 </head>
-<body>
+<body onmousemove="followCursor(event)">
   <script src="https://d3js.org/d3.v3.min.js"></script>
   <script src="js/three.js"></script>
   <script src="./webgazer.js"></script>
+
+  <script>
+    function followCursor(e) {
+      var bx = document.getElementById('debug');
+      console.log(bx, e.clientX, e.clientY);
+      bx.style.left = e.clientX + 'px';
+      bx.style.top = e.clientY + 'px';
+    }
+  </script>
+  <div id="debug">
+    <span id="vertText">VERT</span>
+    <span id="horText">HORT</span>
+  </div>
   <canvas id="myCanvas"></canvas>
+
   <script src="js/box.js"></script>
 
   <script>
