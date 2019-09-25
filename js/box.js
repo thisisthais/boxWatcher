@@ -2,10 +2,10 @@ var canvas;
 var renderer;
 var camera;
 var scene;
-var geometry;
 var cube;
 var averageEyeX;
 var averageEyeY;
+var boundary;
 
 function updateMovingAverageEyeCoords(data) {
   if (!data) return;
@@ -31,7 +31,7 @@ function isLookingAtCube(data) {
   const heightPrecisionDelta = 0.15 * visibleHeight;
   const widthPrecisionDelta = 0.15 * visibleWidth;
   // returning undefined for some reason
-  // const boundingBox = geometry.computeBoundingBox();
+  // const boundingBox = cube.computeBoundingBox();
   // console.log(geometry, boundingBox);
   const isXWithinDelta =
     averageEyeX >= -0.25 - widthPrecisionDelta &&
@@ -48,14 +48,23 @@ function animate(data, clock) {
   if (data != null && data.x) {
     updateMovingAverageEyeCoords(data);
 
-    cube.position.x = averageEyeX;
-    cube.position.y = averageEyeY;
+    // cube.position.x = averageEyeX;
+    // cube.position.y = averageEyeY;
 
     if (isLookingAtCube(data)) {
       cube.material.color.set(0x44aa88);
     } else {
       cube.material.color.set(0xeb4034);
     }
+
+    // cube.rotation.y += 0.01;
+    // cube.rotation.x += 0.01;
+
+    cube.translateOnAxis(new THREE.Vector3(0, 1, 0).normalize(), 0.1);
+
+    boundary.update(cube);
+
+    console.log(globals);
   }
 
   if (resizeRendererToDisplaySize(renderer)) {
@@ -83,11 +92,14 @@ function init(data, clock) {
   const boxWidth = 0.5;
   const boxHeight = 0.5;
   const boxDepth = 0.5;
-  geometry = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth);
+  const geometry = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth);
   const material = new THREE.MeshPhongMaterial({ color: 0x44aa88 });
 
   cube = new THREE.Mesh(geometry, material);
   scene.add(cube);
+
+  boundary = new THREE.BoxHelper(cube, 0xde4996);
+  scene.add(boundary);
 
   const lightColor = 0xffffff;
   const intensity = 1;
