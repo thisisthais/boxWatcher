@@ -43,6 +43,24 @@ function isLookingAtCube(data) {
   return isXWithinDelta && isYWithinDelta;
 }
 
+function cubeIsWithinCanvas() {
+  const [sceneHeight, sceneWidth] = [
+    visibleHeightAtZDepth(0, camera),
+    visibleWidthAtZDepth(0, camera)
+  ];
+
+  boundary.geometry.computeBoundingBox();
+  const { min, max } = boundary.geometry.boundingBox;
+  // no idea where these +- numbers come from
+  const isWithinCanvas =
+    min.x - 0.3 >= -sceneWidth / 2 &&
+    max.x + 0.3 <= sceneWidth / 2 &&
+    min.y - 0.25 >= -sceneHeight / 2 &&
+    max.y + 0.25 <= sceneHeight / 2;
+
+  return isWithinCanvas;
+}
+
 function animate(data, clock) {
   // correct data only shows up after click training
   if (data != null && data.x) {
@@ -60,11 +78,11 @@ function animate(data, clock) {
     // cube.rotation.y += 0.01;
     // cube.rotation.x += 0.01;
 
-    cube.translateOnAxis(new THREE.Vector3(0, 1, 0).normalize(), 0.1);
+    if (cubeIsWithinCanvas()) {
+      cube.translateOnAxis(new THREE.Vector3(-1, -1, 0).normalize(), 0.1);
+    }
 
-    boundary.update(cube);
-
-    console.log(globals);
+    boundary.update();
   }
 
   if (resizeRendererToDisplaySize(renderer)) {
@@ -99,6 +117,7 @@ function init(data, clock) {
   scene.add(cube);
 
   boundary = new THREE.BoxHelper(cube, 0xde4996);
+  boundary.geometry.computeBoundingBox();
   scene.add(boundary);
 
   const lightColor = 0xffffff;
