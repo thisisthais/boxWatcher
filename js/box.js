@@ -2,35 +2,46 @@ var canvas;
 var renderer;
 var camera;
 var scene;
+var geometry;
 var cube;
 
+function isLookingAtCube(data) {
+  if (!data || !cube) return false;
+  const [eyeX, eyeY] = getCanvasEyeCoordinates(data);
+  const visibleHeight = visibleHeightAtZDepth(0, camera);
+  const visibleWidth = visibleWidthAtZDepth(0, camera);
+  const heightPrecisionDelta = 0.15 * visibleHeight;
+  const widthPrecisionDelta = 0.15 * visibleWidth;
+  // returning undefined for some reason
+  // const boundingBox = geometry.computeBoundingBox();
+  // console.log(geometry, boundingBox);
+  const isXWithinDelta =
+    eyeX >= -0.25 - widthPrecisionDelta && eyeX <= 0.25 + widthPrecisionDelta;
+  const isYWithinDelta =
+    eyeY >= -0.25 - heightPrecisionDelta && eyeY <= 0.25 + heightPrecisionDelta;
+
+  return isXWithinDelta && isYWithinDelta;
+}
+
 function animate(data, clock) {
-  // data only shows up after click training?
+  // data only shows up after click training
   if (data) {
-    const [canvasX, canvasY] = getCanvasCoordinates(data);
+    const [eyeX, eyeY] = getCanvasEyeCoordinates(data);
 
-    cube.position.x = canvasX;
-    cube.position.y = canvasY;
-
-    const currentVertText = document.getElementById('vertText').textContent;
-    const currentHorText = document.getElementById('horText').textContent;
-
-    const vertPosition = canvasX <= 0 ? 'LEFT' : 'RIGHT';
-    const horPosition = canvasY <= 0 ? 'BOTTOM' : 'TOP';
-
-    if (currentVertText != vertPosition) {
-      document.getElementById('vertText').textContent = vertPosition;
-    }
-
-    if (currentHorText != horPosition) {
-      document.getElementById('horText').textContent = horPosition;
-    }
+    document.getElementById('xPos').textContent = eyeX.toFixed(2);
+    document.getElementById('yPos').textContent = eyeY.toFixed(2);
   }
 
   if (resizeRendererToDisplaySize(renderer)) {
     const canvas = renderer.domElement;
     camera.aspect = canvas.clientWidth / canvas.clientHeight;
     camera.updateProjectionMatrix();
+  }
+
+  if (isLookingAtCube(data)) {
+    cube.material.color.set(0x44aa88);
+  } else {
+    cube.material.color.set(0xeb4034);
   }
 
   renderer.render(scene, camera);
@@ -49,10 +60,10 @@ function init(data, clock) {
 
   scene = new THREE.Scene();
 
-  const boxWidth = 1;
-  const boxHeight = 1;
-  const boxDepth = 1;
-  const geometry = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth);
+  const boxWidth = 0.5;
+  const boxHeight = 0.5;
+  const boxDepth = 0.5;
+  geometry = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth);
   const material = new THREE.MeshPhongMaterial({ color: 0x44aa88 });
 
   cube = new THREE.Mesh(geometry, material);
@@ -97,22 +108,23 @@ const visibleWidthAtZDepth = (depth, camera) => {
   return height * camera.aspect;
 };
 
-const getCanvasCoordinates = data => {
+const getCanvasEyeCoordinates = data => {
   const screenWidth = window.innerWidth;
   const screenHeight = window.innerHeight;
 
-  var scaledX = (data.x * 1.0) / screenWidth;
-  var scaledY = (data.y * 1.0) / screenHeight;
+  const eyeX = data.x <= screenWidth - canvas.clientWidth ? 0 : data.x;
+  const eyeY = data.y <= screenHeight - canvas.clientHeight ? 0 : data.y;
 
-  // 0? or 0.5?
+  var scaledX = eyeX / screenWidth;
+  var scaledY = eyeY / screenHeight;
+
   const visibleHeight = visibleHeightAtZDepth(0, camera);
   const visibleWidth = visibleWidthAtZDepth(0, camera);
 
-  const canvasX = scaledX * visibleWidth - 2.0;
-  // -2? or -2.5
-  const canvasY = -1 * (scaledY * visibleHeight - 2.0);
+  const canvasEyeX = scaledX * visibleWidth - visibleWidth / 2;
+  const canvasEyeY = -1 * (scaledY * visibleHeight - visibleHeight / 2);
 
-  return [canvasX, canvasY];
+  return [canvasEyeX, canvasEyeY];
 };
 
 init();

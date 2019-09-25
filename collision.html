@@ -22,7 +22,7 @@
       color: red;
       font-size: 200%;
       position: absolute;
-      z-index: -1;
+      z-index: 100;
     }
   </style>
 </head>
@@ -34,14 +34,13 @@
   <script>
     function followCursor(e) {
       var bx = document.getElementById('debug');
-      console.log(bx, e.clientX, e.clientY);
       bx.style.left = e.clientX + 'px';
       bx.style.top = e.clientY + 'px';
     }
   </script>
   <div id="debug">
-    <span id="vertText">VERT</span>
-    <span id="horText">HORT</span>
+    <span id="xPos">X</span>
+    <span id="yPos">Y</span>
   </div>
   <canvas id="myCanvas"></canvas>
 
