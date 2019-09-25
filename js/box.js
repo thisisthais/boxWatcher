@@ -4,10 +4,28 @@ var camera;
 var scene;
 var geometry;
 var cube;
+var averageEyeX;
+var averageEyeY;
+
+function updateMovingAverageEyeCoords(data) {
+  if (!data) return;
+  const [eyeX, eyeY] = getCanvasEyeCoordinates(data);
+
+  // 0?
+  if (!averageEyeX && !averageEyeY) {
+    averageEyeX = eyeX;
+    averageEyeY = eyeY;
+  }
+
+  averageEyeX = (4 / 5) * eyeX + averageEyeX / 5;
+  averageEyeY = (4 / 5) * eyeY + averageEyeY / 5;
+
+  document.getElementById('xPos').textContent = averageEyeX.toFixed(2);
+  document.getElementById('yPos').textContent = averageEyeY.toFixed(2);
+}
 
 function isLookingAtCube(data) {
-  if (!data || !cube) return false;
-  const [eyeX, eyeY] = getCanvasEyeCoordinates(data);
+  if (!data) return false;
   const visibleHeight = visibleHeightAtZDepth(0, camera);
   const visibleWidth = visibleWidthAtZDepth(0, camera);
   const heightPrecisionDelta = 0.15 * visibleHeight;
@@ -16,32 +34,34 @@ function isLookingAtCube(data) {
   // const boundingBox = geometry.computeBoundingBox();
   // console.log(geometry, boundingBox);
   const isXWithinDelta =
-    eyeX >= -0.25 - widthPrecisionDelta && eyeX <= 0.25 + widthPrecisionDelta;
+    averageEyeX >= -0.25 - widthPrecisionDelta &&
+    averageEyeX <= 0.25 + widthPrecisionDelta;
   const isYWithinDelta =
-    eyeY >= -0.25 - heightPrecisionDelta && eyeY <= 0.25 + heightPrecisionDelta;
+    averageEyeY >= -0.25 - heightPrecisionDelta &&
+    averageEyeY <= 0.25 + heightPrecisionDelta;
 
   return isXWithinDelta && isYWithinDelta;
 }
 
 function animate(data, clock) {
-  // data only shows up after click training
-  if (data) {
-    const [eyeX, eyeY] = getCanvasEyeCoordinates(data);
+  // correct data only shows up after click training
+  if (data != null && data.x) {
+    updateMovingAverageEyeCoords(data);
 
-    document.getElementById('xPos').textContent = eyeX.toFixed(2);
-    document.getElementById('yPos').textContent = eyeY.toFixed(2);
+    cube.position.x = averageEyeX;
+    cube.position.y = averageEyeY;
+
+    if (isLookingAtCube(data)) {
+      cube.material.color.set(0x44aa88);
+    } else {
+      cube.material.color.set(0xeb4034);
+    }
   }
 
   if (resizeRendererToDisplaySize(renderer)) {
     const canvas = renderer.domElement;
     camera.aspect = canvas.clientWidth / canvas.clientHeight;
     camera.updateProjectionMatrix();
-  }
-
-  if (isLookingAtCube(data)) {
-    cube.material.color.set(0x44aa88);
-  } else {
-    cube.material.color.set(0xeb4034);
   }
 
   renderer.render(scene, camera);
