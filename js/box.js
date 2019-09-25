@@ -6,6 +6,10 @@ var cube;
 var averageEyeX;
 var averageEyeY;
 var boundary;
+var cubeTranslation = {
+  vecX: 0,
+  vecY: 1
+};
 
 function updateMovingAverageEyeCoords(data) {
   if (!data) return;
@@ -79,7 +83,13 @@ function animate(data, clock) {
     // cube.rotation.x += 0.01;
 
     if (cubeIsWithinCanvas()) {
-      cube.translateOnAxis(new THREE.Vector3(-1, -1, 0).normalize(), 0.1);
+      const { vecX, vecY } = cubeTranslation;
+      cube.translateOnAxis(new THREE.Vector3(vecX, vecY, 0).normalize(), 0.1);
+    } else {
+      cubeTranslation.vecX *= -1;
+      cubeTranslation.vecY *= -1;
+      const { vecX, vecY } = cubeTranslation;
+      cube.translateOnAxis(new THREE.Vector3(vecX, vecY, 0).normalize(), 0.1);
     }
 
     boundary.update();
