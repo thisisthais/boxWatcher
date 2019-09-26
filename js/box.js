@@ -10,6 +10,13 @@ var cubeTranslation = {
   vecX: 0,
   vecY: 1
 };
+var clicks = 0;
+
+function increaseClicks() {
+  clicks++;
+}
+
+document.body.addEventListener('click', increaseClicks, true);
 
 function updateMovingAverageEyeCoords(data) {
   if (!data) return;
@@ -28,21 +35,25 @@ function updateMovingAverageEyeCoords(data) {
   document.getElementById('yPos').textContent = averageEyeY.toFixed(2);
 }
 
+// I should really be looking at the SCREEN position of the cube, not the scene pos
 function isLookingAtCube(data) {
   if (!data) return false;
   const visibleHeight = visibleHeightAtZDepth(0, camera);
   const visibleWidth = visibleWidthAtZDepth(0, camera);
-  const heightPrecisionDelta = 0.15 * visibleHeight;
+  boundary.geometry.computeBoundingBox();
+  const { min, max } = boundary.geometry.boundingBox;
+  // const heightPrecisionDelta = 0.2 * visibleHeight;
+  // const widthPrecisionDelta = 0.15 * visibleWidth;
+  const heightPrecisionDelta = 0.2 * visibleHeight;
   const widthPrecisionDelta = 0.15 * visibleWidth;
-  // returning undefined for some reason
-  // const boundingBox = cube.computeBoundingBox();
-  // console.log(geometry, boundingBox);
+  console.log('deltas', heightPrecisionDelta, widthPrecisionDelta);
+
   const isXWithinDelta =
-    averageEyeX >= -0.25 - widthPrecisionDelta &&
-    averageEyeX <= 0.25 + widthPrecisionDelta;
+    averageEyeX >= cube.position.x - min.x - widthPrecisionDelta &&
+    averageEyeX <= cube.position.x + max.x + widthPrecisionDelta;
   const isYWithinDelta =
-    averageEyeY >= -0.25 - heightPrecisionDelta &&
-    averageEyeY <= 0.25 + heightPrecisionDelta;
+    averageEyeY >= cube.position.y - min.y - heightPrecisionDelta &&
+    averageEyeY <= cube.position.y + max.y + heightPrecisionDelta;
 
   return isXWithinDelta && isYWithinDelta;
 }
@@ -66,6 +77,7 @@ function cubeIsWithinCanvas() {
 }
 
 function animate(data, clock) {
+  console.log('CLICKS', clicks);
   // correct data only shows up after click training
   if (data != null && data.x) {
     updateMovingAverageEyeCoords(data);
@@ -73,24 +85,33 @@ function animate(data, clock) {
     // cube.position.x = averageEyeX;
     // cube.position.y = averageEyeY;
 
+    // if (clicks > 20) {
+    //   if (isLookingAtCube(data)) {
+    //     cube.material.color.set(0x44aa88);
+    //   } else {
+    //     cube.material.color.set(0xeb4034);
+    //     cube.translateOnAxis(new THREE.Vector3(0, 0, 1).normalize(), 0.01);
+    //   }
+    // }
     if (isLookingAtCube(data)) {
       cube.material.color.set(0x44aa88);
     } else {
       cube.material.color.set(0xeb4034);
+      cube.translateOnAxis(new THREE.Vector3(0, 0, 1).normalize(), 0.01);
     }
 
     // cube.rotation.y += 0.01;
     // cube.rotation.x += 0.01;
 
-    if (cubeIsWithinCanvas()) {
-      const { vecX, vecY } = cubeTranslation;
-      cube.translateOnAxis(new THREE.Vector3(vecX, vecY, 0).normalize(), 0.1);
-    } else {
-      cubeTranslation.vecX *= -1;
-      cubeTranslation.vecY *= -1;
-      const { vecX, vecY } = cubeTranslation;
-      cube.translateOnAxis(new THREE.Vector3(vecX, vecY, 0).normalize(), 0.1);
-    }
+    // if (cubeIsWithinCanvas()) {
+    //   const { vecX, vecY } = cubeTranslation;
+    //   cube.translateOnAxis(new THREE.Vector3(vecX, vecY, 0).normalize(), 0.1);
+    // } else {
+    //   cubeTranslation.vecX *= -1;
+    //   cubeTranslation.vecY *= -1;
+    //   const { vecX, vecY } = cubeTranslation;
+    //   cube.translateOnAxis(new THREE.Vector3(vecX, vecY, 0).normalize(), 0.1);
+    // }
 
     boundary.update();
   }
