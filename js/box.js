@@ -122,16 +122,17 @@ function animate(data, clock) {
   // correct data only shows up after click training
   console.log(unWatchedTime);
   if (unWatchedTime > 100) {
-    const timeInSeconds = Math.floor(Date.now() - startTime / 1000);
+    const endTime = new Date();
+    const timeInSeconds = Math.floor(endTime - startTime / 1000);
     window.alert(`Thanks for watching my box for ${timeInSeconds} seconds`);
   } else if (data != null && data.x && clicks >= 12) {
     if (startTime == undefined) {
-      startTime = Date.now();
+      startTime = new Date();
     }
     updateMovingAverageEyeCoords(data);
 
     if (isLookingAtCube(data)) {
-      cube.material.color.set(0x44aa88);
+      cube.material.color.set(0x58b446);
     } else {
       cube.material.color.set(0xeb4034);
       unWatchedTime++;
@@ -171,35 +172,33 @@ function init(data, clock) {
   canvas = document.querySelector('#myCanvas');
   renderer = new THREE.WebGLRenderer({ canvas });
   last5EyeChecks = new EvictingList(5);
-
   const fov = 75;
   const aspect = 2; // the canvas default
   const near = 0.1;
   const far = 5;
   camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
   camera.position.z = 2;
-
   scene = new THREE.Scene();
-
+  scene.background = new THREE.Color(0xf1adf7);
   const boxWidth = 0.5;
   const boxHeight = 0.5;
-  const boxDepth = 0.5;
+  const boxDepth = 0.25;
   const geometry = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth);
-  const material = new THREE.MeshPhongMaterial({ color: 0x44aa88 });
-
+  const texture = new THREE.ImageUtils.loadTexture('media/rc.png');
+  const material = new THREE.MeshPhongMaterial({
+    color: 0x58b446,
+    map: texture
+  });
   cube = new THREE.Mesh(geometry, material);
   scene.add(cube);
-
   boundary = new THREE.BoxHelper(cube, 0xde4996);
   boundary.geometry.computeBoundingBox();
   scene.add(boundary);
-
   const lightColor = 0xffffff;
   const intensity = 1;
   const light = new THREE.DirectionalLight(lightColor, intensity);
   light.position.set(-1, 2, 4);
   scene.add(light);
-
   requestAnimationFrame(animate);
 }
 
