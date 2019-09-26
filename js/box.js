@@ -11,6 +11,19 @@ var cubeTranslation = {
   vecY: 1
 };
 var last5EyeChecks;
+var clicks = 0;
+var unWatchedTime = 0;
+var startTime;
+
+function increaseClicks() {
+  clicks++;
+}
+
+document.body.addEventListener('click', increaseClicks, true);
+
+window.alert(
+  'Could you watch my box for a bit? To accept, click around the screen a dozen times and make sure you follow the cursor with your eyes.'
+);
 
 class EvictingList {
   constructor(n) {
@@ -107,16 +120,21 @@ function detectEdgeCollision() {
 
 function animate(data, clock) {
   // correct data only shows up after click training
-  if (data != null && data.x) {
+  console.log(unWatchedTime);
+  if (unWatchedTime > 100) {
+    const timeInSeconds = Math.floor(Date.now() - startTime / 1000);
+    window.alert(`Thanks for watching my box for ${timeInSeconds} seconds`);
+  } else if (data != null && data.x && clicks >= 12) {
+    if (startTime == undefined) {
+      startTime = Date.now();
+    }
     updateMovingAverageEyeCoords(data);
-
-    // cube.position.x = averageEyeX;
-    // cube.position.y = averageEyeY;
 
     if (isLookingAtCube(data)) {
       cube.material.color.set(0x44aa88);
     } else {
       cube.material.color.set(0xeb4034);
+      unWatchedTime++;
     }
 
     // cube.rotation.y += 0.01;
