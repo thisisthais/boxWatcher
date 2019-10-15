@@ -21,9 +21,9 @@ function increaseClicks() {
 
 document.body.addEventListener('click', increaseClicks, true);
 
-window.alert(
-  'Could you watch my box for a bit? To accept, click around the screen a dozen times and make sure you follow the cursor with your eyes.'
-);
+// window.alert(
+//   'Could you watch my box for a bit? To accept, click around the screen a dozen times and make sure you follow the cursor with your eyes.'
+// );
 
 class EvictingList {
   constructor(n) {
@@ -120,7 +120,7 @@ function detectEdgeCollision() {
 
 function animate(data, clock) {
   // correct data only shows up after click training
-  console.log(unWatchedTime);
+
   if (unWatchedTime > 100) {
     const endTime = new Date();
     const timeInSeconds = Math.floor(endTime - startTime / 1000);
