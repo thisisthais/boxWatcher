@@ -42,23 +42,29 @@
   <body>
     <script src="js/three.js"></script>
 
-    <p id="firstLine"></p>
+    <p id="firstTypingLine" />
+    <p id="secondTypingLine" />
+    <p id="firstLine" style="display:none">Wow... You look tired</p>
+    <p id="secondLine" style="display:none">Why don't you take a break? Watch my box for a while, yeah?</p>
     <script>
-      var i = 0;
-      var firstLine = 'Hey there friend...'; /* The text */
-      var secLine = 'You look like you could use a break from doing stuff.';
-      var speed = 50; /* The speed/duration of the effect in milliseconds */
+      function type(i, t, ie, oe, resolve) {
+        input = document.getElementById(ie).innerHTML;
+        document.getElementById(oe).innerHTML += input.charAt(i);
 
-      function typeWriter() {
-        if (i < firstLine.length) {
-          document.getElementById('firstLine').innerHTML += firstLine.charAt(i);
-          i++;
-          setTimeout(typeWriter, speed);
-        } else {
-          return Promise.resolve();
-        }
+        setTimeout(function() {
+            if (i < input.length - 1) {
+              type(i + 1, t, ie, oe, resolve);
+            } else {
+              if (resolve) resolve();
+            }
+          }, t);
       }
-      typeWriter();
+
+      new Promise(function (resolve) {
+        type(0, 100, 'firstLine', 'firstTypingLine', resolve);
+      }).then(function (result) {
+        type(0, 80, 'secondLine', 'secondTypingLine');
+      })
     </script>
 
     <canvas id="myCanvas"></canvas>
