@@ -32,6 +32,10 @@
         text-align: center;
       }
 
+      .root {
+        display: 'flex';
+      }
+
       #typingScreen {
         min-height: 30vh;
       }
@@ -57,39 +61,40 @@
   <body>
     <script src="js/three.js"></script>
 
-    <div id="typingScreen">
-      <p id="firstTypingLine" />
-      <p id="secondTypingLine" />
-      <p id="firstLine" style="display:none">Wow... You look tired</p>
-      <p id="secondLine" style="display:none">Why don't you take a break? Watch my box for a while, yeah?</p>
+    <div class="root">
+      <div id="typingScreen">
+          <p id="firstTypingLine" />
+          <p id="secondTypingLine" />
+          <p id="firstLine" style="display:none">Wow... You look tired</p>
+          <p id="secondLine" style="display:none">Why don't you take a break? Watch my box for a while, yeah?</p>
+        </div>
+        <script>
+          function type(i, t, ie, oe, resolve) {
+            input = document.getElementById(ie).innerHTML;
+            document.getElementById(oe).innerHTML += input.charAt(i);
+    
+            setTimeout(function() {
+                if (i < input.length - 1) {
+                  type(i + 1, t, ie, oe, resolve);
+                } else {
+                  if (resolve) resolve();
+                }
+              }, t);
+          }
+    
+          new Promise(function (resolve) {
+            type(0, 100, 'firstLine', 'firstTypingLine', resolve);
+          }).then(function (result) {
+            new Promise(function (resolve) {
+              type(0, 80, 'secondLine', 'secondTypingLine', resolve)
+            }).then(function (result) {
+              document.getElementById('myCanvas').classList.add('fadeIn');
+            });
+          });
+        </script>
+    
+        <canvas id="myCanvas"></canvas>
     </div>
-    <script>
-      function type(i, t, ie, oe, resolve) {
-        input = document.getElementById(ie).innerHTML;
-        document.getElementById(oe).innerHTML += input.charAt(i);
-
-        setTimeout(function() {
-            if (i < input.length - 1) {
-              type(i + 1, t, ie, oe, resolve);
-            } else {
-              if (resolve) resolve();
-            }
-          }, t);
-      }
-
-      new Promise(function (resolve) {
-        type(0, 100, 'firstLine', 'firstTypingLine', resolve);
-      }).then(function (result) {
-        new Promise(function (resolve) {
-          type(0, 80, 'secondLine', 'secondTypingLine', resolve)
-        }).then(function (result) {
-          console.log('done');
-          document.getElementById('myCanvas').classList.add('fadeIn');
-        });
-      });
-    </script>
-
-    <canvas id="myCanvas"></canvas>
     <script src="js/intro.js"></script>
 
     <script src="./node_modules/jquery/dist/jquery.min.js"></script>
