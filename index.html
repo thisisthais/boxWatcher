@@ -25,11 +25,26 @@
         background-color: black;
       }
 
-      p {
+      div p {
         color: white;
         font-family: 'Courier New';
         font-size: 2em;
         text-align: center;
+      }
+
+      #typingScreen {
+        min-height: 30vh;
+      }
+
+      canvas {
+        visibility: hidden;
+        opacity: 0;
+      }
+
+      .fadeIn {
+        visibility: visible;
+        opacity: 1;
+        transition: opacity 2s linear;
       }
     </style>
 
@@ -42,10 +57,12 @@
   <body>
     <script src="js/three.js"></script>
 
-    <p id="firstTypingLine" />
-    <p id="secondTypingLine" />
-    <p id="firstLine" style="display:none">Wow... You look tired</p>
-    <p id="secondLine" style="display:none">Why don't you take a break? Watch my box for a while, yeah?</p>
+    <div id="typingScreen">
+      <p id="firstTypingLine" />
+      <p id="secondTypingLine" />
+      <p id="firstLine" style="display:none">Wow... You look tired</p>
+      <p id="secondLine" style="display:none">Why don't you take a break? Watch my box for a while, yeah?</p>
+    </div>
     <script>
       function type(i, t, ie, oe, resolve) {
         input = document.getElementById(ie).innerHTML;
@@ -63,8 +80,13 @@
       new Promise(function (resolve) {
         type(0, 100, 'firstLine', 'firstTypingLine', resolve);
       }).then(function (result) {
-        type(0, 80, 'secondLine', 'secondTypingLine');
-      })
+        new Promise(function (resolve) {
+          type(0, 80, 'secondLine', 'secondTypingLine', resolve)
+        }).then(function (result) {
+          console.log('done');
+          document.getElementById('myCanvas').classList.add('fadeIn');
+        });
+      });
     </script>
 
     <canvas id="myCanvas"></canvas>
