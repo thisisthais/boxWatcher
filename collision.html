@@ -5,8 +5,19 @@
   <style>
     html,
     body {
-      margin: 0;
-      height: 100%;
+      background-color: black;
+    }
+
+    .upperLeft {
+      width: 20% !important;
+      height: 20% !important;
+    }
+
+    .feedbackBox {
+      width: 12% !important;
+      height: 12% !important;
+      top: 4% !important;
+      left: 4% !important;
     }
 
     #myCanvas {
@@ -17,26 +28,29 @@
       right: 0;
     }
 
+    /* this was for the mouse point debugger */
+    /*
     div {
-      /* bottom: 0; */
       color: #58b446;
       font-size: 200%;
       position: absolute;
       z-index: 100;
     }
+    */
   </style>
 </head>
-<body onmousemove="followCursor(event)">
+<!-- <body onmousemove="followCursor(event)"> -->
+<body>
   <script src="js/three.js"></script>
   <script src="./webgazer.js" async></script>
 
-  <script>
+  <!-- <script>
     function followCursor(e) {
       var bx = document.getElementById('debug');
       bx.style.left = e.clientX + 'px';
       bx.style.top = e.clientY + 'px';
     }
-  </script>
+  </script> -->
   <!-- <div id="debug">
     <span id="xPos">X</span>
     <span id="yPos">Y</span>
@@ -73,9 +87,17 @@
         else if (typeof feedbackBox == 'undefined' || feedbackBox == null) {
           setTimeout(checkIfReady, 100);
         } else {
-          // Add the SVG component on the top of everything.
-          // setupCollisionSystem();
-          // webgazer.setGazeListener(collisionEyeListener);
+          feedbackBox.classList.add('feedbackBox');
+          const allVideoElements = [
+            document.getElementById('renderCanvas'),
+            document.getElementById('webgazerVideoFeed'),
+            document.getElementById('webgazerVideoCanvas'),
+            document.getElementById('webgazerFaceOverlay')
+          ];
+          console.log(allVideoElements);
+
+          allVideoElements.forEach(el => el.classList.add('upperLeft'));
+
           webgazer.setGazeListener(animate);
         }
       }

@@ -21,10 +21,6 @@ function increaseClicks() {
 
 document.body.addEventListener('click', increaseClicks, true);
 
-// window.alert(
-//   'Could you watch my box for a bit? To accept, click around the screen a dozen times and make sure you follow the cursor with your eyes.'
-// );
-
 class EvictingList {
   constructor(n) {
     this.list = [];
